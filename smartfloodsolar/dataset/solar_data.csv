@@ -1,0 +1,10 @@
+Flood_Risk,Cloud_Cover,Humidity,Waterlogging,Efficiency,Damage_Risk
+Low,20,50,2,92,Low
+Low,30,55,3,88,Low
+Medium,45,65,5,72,Medium
+Medium,55,70,6,65,Medium
+High,70,80,8,48,High
+High,85,90,10,30,High
+Low,25,52,2,90,Low
+Medium,50,68,5,70,Medium
+High,75,85,9,40,High

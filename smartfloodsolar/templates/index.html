@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Flood & Solar Risk Monitoring</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+</head>
+<body>
+
+
+    <nav style="
+    background:#111;
+    padding:15px;
+    text-align:center;
+    ">
+    <a href="/" style="color:rgb(254, 255, 255);margin:20px;text-decoration:none;">Home</a>
+    <a href="/history" style="color:#2597b9;margin:20px;text-decoration:none;">History</a>
+    <a href="/dashboard" style="color:#2597b9;margin:20px;text-decoration:none;">Dashboard</a>
+    </nav>
+
+<div class="main-layout">
+    <div class="left-panel">
+        <h1>Smart Flood & Solar Risk Monitoring System</h1>
+
+    <form method="POST" action="/predict">
+
+        <label>Rainfall</label>
+        <input type="number" step="any" name="rainfall" required>
+
+        <label>Temperature</label>
+        <input type="number" step="any" id="temperature" name="temperature" required>
+
+        <label>Humidity</label>
+        <input type="number" step="any" id="humidity" name="humidity" required>
+
+        <label>Water Level</label>
+        <input type="number" step="any" name="water_level" required>
+
+        <label>Soil Moisture</label>
+        <input type="number" step="any" name="soil_moisture" required>
+
+        <label>Cloud Cover</label>
+        <input type="number" step="any" id="cloud_cover" name="cloud_cover" required>
+
+        <label>Waterlogging</label>
+        <input type="number" step="any" name="waterlogging" required>
+
+        <button type="submit">Predict</button>
+
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
+    </form>
+    </div>
+
+    <div class="right-panel">
+         <h2>Select Location on Map</h2>
+        <div id="map"></div>
+    
+    {% if flood_risk %}
+    <div class="result">
+        <h2>Flood Risk: {{ flood_risk }}</h2>
+        <h2>Solar Damage Risk: {{ solar_risk }}</h2>
+        <h2>Solar Efficiency: {{ efficiency }}%</h2>
+    </div>
+    {% endif %}
+    </div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    var map = L.map('map').setView([28.6139, 77.2090], 6);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution:'© OpenStreetMap'
+    }).addTo(map);
+
+    fetch("/markers")
+    .then(response => response.json())
+    .then(data => {
+
+        data.forEach(place => {
+
+        let color;
+
+        if(place.flood_risk === "High"){
+            color = "red";
+        }
+        else if(place.flood_risk === "Medium"){
+            color = "orange";
+        }
+        else{
+            color = "green";
+        }
+
+        let circle = L.circleMarker(
+            [place.lat, place.lng],
+            {
+                radius: 10,
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.8
+            }
+        ).addTo(map);
+
+        circle.bindPopup(
+            "<b>Flood Risk:</b> " + place.flood_risk +
+            "<br><b>Solar Risk:</b> " + place.solar_risk +
+            "<br><b>Efficiency:</b> " + place.efficiency + "%" +
+            "<br><b>Date:</b> " + place.date
+        );
+    });
+
+});
+
+    let marker;
+
+    map.on('click', function(e){
+
+        let lat = e.latlng.lat;
+        let lng = e.latlng.lng;
+
+        document.getElementById("latitude").value = lat;
+        document.getElementById("longitude").value = lng;
+
+        if(marker){
+            map.removeLayer(marker);
+        }
+
+        marker = L.marker([lat,lng]).addTo(map)
+            .bindPopup("Fetching weather...")
+            .openPopup();
+
+        fetch(`/weather?lat=${lat}&lon=${lng}`)
+            .then(response => response.json())
+            .then(data => {
+
+                document.getElementById("temperature").value = data.temperature;
+                document.getElementById("humidity").value = data.humidity;
+                document.getElementById("cloud_cover").value = data.cloud_cover;
+
+                marker.setPopupContent(
+                    "Weather Loaded ✅<br>" +
+                    "Temp: " + data.temperature + "°C<br>" +
+                    "Humidity: " + data.humidity + "%<br>" +
+                    "Cloud Cover: " + data.cloud_cover + "%"
+                );
+            });
+    });
+</script>
+
+</body>
+</html>

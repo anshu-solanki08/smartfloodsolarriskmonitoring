@@ -1,0 +1,14 @@
+Rainfall,Temperature,Humidity,Water_Level,Soil_Moisture,Flood_Risk
+50,30,55,2,35,Low
+80,32,60,3,40,Low
+120,29,70,5,55,Medium
+150,28,75,6,60,Medium
+220,26,85,8,80,High
+250,25,90,9,85,High
+300,24,95,10,90,High
+90,31,62,4,45,Low
+170,27,78,7,65,Medium
+280,25,92,9,88,High
+
+
+

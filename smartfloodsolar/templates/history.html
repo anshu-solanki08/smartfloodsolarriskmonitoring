@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction History</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav style="
+    background:#111;
+    padding:15px;
+    text-align:center;
+    ">
+    <a href="/" style="color:#2597b9;margin:20px;text-decoration:none;">Home</a>
+    <a href="/history" style="color:rgb(254, 255, 255);margin:20px;text-decoration:none;">History</a>
+    <a href="/dashboard" style="color:#2597b9;margin:20px;text-decoration:none;">Dashboard</a>
+
+    </nav>
+
+<div class="container">
+    <h1>Prediction History</h1>
+
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Flood Risk</th>
+            <th>Solar Risk</th>
+            <th>Efficiency</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+        </tr>
+
+        {% for row in records %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}%</td>
+            <td>{{ row[4] }}</td>
+            <td>{{ row[5] }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+</div>
+
+</body>
+</html>
